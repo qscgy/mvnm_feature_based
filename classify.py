@@ -92,7 +92,7 @@ if args.retrain:
     elif args.knn:
         clf = KNeighborsClassifier()
     elif args.svm:
-        clf = SVC(gamma='auto')
+        clf = SVC(gamma=0.01, C=4)
 else:
     if args.rf:
         clf = load(os.path.join(save_folder, 'rf.joblib'))
@@ -154,7 +154,7 @@ elif args.xv:
     msg = "%f (%f)" % (cv_results.mean(), cv_results.std())
     print(msg)
 elif args.gs and args.svm:
-    grid = {'gamma': [0.01, 0.02, 0.03]}
+    grid = {'C':[4, 5]}
     grid_search_params(grid, svc=clf, data=global_features, target=global_labels)
 
 if args.retrain:    # save model
