@@ -27,7 +27,10 @@ from pathlib import Path
 # 3484 m, 69 were nm
 # 2688 nm, 757 were m
 
-# Best result on site 8 was with global mean-std, Haralick, Hu moments
+# Best result on site 8 (90%m, 95%nm) was with global mean-std, Haralick, ORB (100 bins)
+# Second-best (83%m, 95%nm) was with 32x32 color feature grid (16 bins), Haralick, ORB (100 bins)
+# It gets thrown off by the uniformly green mangroves and green water
+# Next step is to try a coarser color grid or different kernels, since the data is very linearly inseparable 
 
 def grid_search_params(grid, svc, data, target):
     clf = GridSearchCV(svc, grid, cv=3)
