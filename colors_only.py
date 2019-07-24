@@ -8,7 +8,7 @@ from sklearn.decomposition import PCA
 def colors():
     reds = {}
     greens = {}
-    train_path = 'dataset/train'
+    train_path = os.path.abspath('dataset/train')
     train_labels = os.listdir(train_path)
     for training_name in train_labels:
         dir = os.path.join(train_path, training_name)
@@ -24,12 +24,13 @@ def colors():
         reds[training_name] = tmp_reds
         greens[training_name] = tmp_greens
 
-    plt.figure()
-    ax = plt.subplot(111)
-    for key in reds:
-        ax.scatter(reds[key], greens[key], label=key)
-    ax.legend()
-    plt.show()
+    # plt.figure()
+    # ax = plt.subplot(111)
+    # for key in reds:
+    #     ax.scatter(reds[key], greens[key], label=key)
+    # ax.legend()
+    # plt.show()
+    print(np.mean(np.array(reds['m'])))
 
 def pca_plot():
     h5f_data = h5py.File('output/data.h5', 'r')
@@ -49,4 +50,4 @@ def pca_plot():
     print(pca.explained_variance_)
     print(np.sum(pca.explained_variance_))
 
-pca_plot()
+colors()

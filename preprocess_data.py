@@ -15,11 +15,9 @@ from enum import Enum
 import argparse
 
 fixed_size = tuple((256, 256))
-train_path = 'dataset/train'
-save_folder = 'models/'
-num_trees = 100
-test_size = 0.10
-seed = 9
+train_path = os.path.abspath('dataset/train')
+save_folder = os.path.abspath('models/')
+outdir = os.path.abspath('output/')
 
 class Feature(Enum):
     '''
@@ -159,9 +157,9 @@ if __name__ == '__main__':
     print("[STATUS] target labels: {}".format(target))
     print("[STATUS] target labels shape: {}".format(target.shape))
 
-    h5f_data = h5py.File('output/data.h5', 'w')
+    h5f_data = h5py.File(os.path.join(outdir,'data.h5'), 'w')
     h5f_data.create_dataset('dataset_1', data=scaled)
-    h5f_label = h5py.File('output/labels.h5', 'w')
+    h5f_label = h5py.File(os.path.join(outdir,'labels.h5'), 'w')
     h5f_label.create_dataset('dataset_1', data=np.array(target))
     h5f_data.close()
     h5f_label.close()

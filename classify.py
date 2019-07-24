@@ -56,10 +56,11 @@ seed = 9
 results = []
 names = []
 test_path = args.input
-save_folder = 'models/'
+save_folder = os.path.abspath('models/')
+outdir = os.path.abspath('output/')
 
-h5f_data = h5py.File('output/data.h5', 'r')
-h5f_label = h5py.File('output/labels.h5', 'r')
+h5f_data = h5py.File(os.path.join(outdir,'data.h5'), 'r')
+h5f_label = h5py.File(os.path.join(outdir,'labels.h5'), 'r')
 
 global_features_string = h5f_data['dataset_1']
 global_labels_string = h5f_label['dataset_1']
