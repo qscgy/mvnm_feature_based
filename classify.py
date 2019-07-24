@@ -92,7 +92,7 @@ if args.retrain:
     elif args.knn:
         clf = KNeighborsClassifier()
     elif args.svm:
-        clf = SVC()
+        clf = SVC(gamma='auto')
 else:
     if args.rf:
         clf = load(os.path.join(save_folder, 'rf.joblib'))

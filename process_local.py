@@ -11,8 +11,8 @@ def compute_local_color(image, im_size=256):
     '''
     Computes the array of color patch features.
     '''
-    size = 8
-    step = 4
+    size = 32
+    step = 32
     red = np.ascontiguousarray(image[:,:,2])
     green = np.ascontiguousarray(image[:,:,1])
     blue = np.ascontiguousarray(image[:,:,0])
@@ -63,7 +63,7 @@ def train_kmeans(im_files, num_cluster=100):
 
     print("[STATUS] Training k-means...")
     kmeans_orb = MiniBatchKMeans(n_clusters=num_cluster, random_state=3).fit(descriptors)
-    kmeans_color = MiniBatchKMeans(n_clusters=32, random_state=2).fit(color_patches)
+    kmeans_color = MiniBatchKMeans(n_clusters=16, random_state=2).fit(color_patches)
     return kmeans_orb, kmeans_color
 
 def process_patch(patch):
@@ -105,7 +105,7 @@ def fd_feature_hist(image, model, bins=100):
         return hist
     return np.zeros(bins)
 
-def fd_local_color_hist(image, model, bins=32):
+def fd_local_color_hist(image, model, bins=16):
     colors = compute_local_color(image)
     fitted = model.predict(colors)
     return np.histogram(fitted, bins=bins)[0]
