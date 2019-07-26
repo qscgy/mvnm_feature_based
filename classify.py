@@ -97,6 +97,7 @@ if args.retrain:
         clf = KNeighborsClassifier()
     elif args.svm:
         clf = SVC(gamma=0.01, C=4)
+    clf.fit(train_data_global, train_labels_global)
 else:
     if args.rf:
         clf = load(os.path.join(save_folder, 'rf.joblib'))
@@ -105,7 +106,6 @@ else:
     elif args.svm:
         clf = load(os.path.join(save_folder, 'svm.joblib'))
 
-clf.fit(train_data_global, train_labels_global)
 # print("[STATUS] Fit KNN classifier to training data...")
 # print("[STATUS] Beginning test...")
 # print(test_data_global.shape)
