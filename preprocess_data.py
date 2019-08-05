@@ -98,6 +98,8 @@ def calc_global_feature(file, color_model=None, orb_model=None,  local=False):
     image = cv2.imread(file)
     image = cv2.resize(image, fixed_size)   # force same size
 
+    # This is where you change what features are used. This is the only place the feature vector
+    # is constructed. Add or remove features from the list.
     fv_haralick = fd_haralick(image)
     if local:
         fv_local = fd_feature_hist(image, orb_model)

@@ -10,6 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from preprocess_data import fd_haralick, fd_hu_moments, fd_histogram, calc_global_feature
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.manifold import MDS, TSNE
 import argparse, random
 from sklearn.svm import SVC
 from joblib import load, dump
@@ -51,6 +52,7 @@ parser.add_argument('--xv', action='store_true', help='10-fold cross-validate')
 parser.add_argument('-r', '--retrain', action='store_true', help='retrain data set from h5 files')
 parser.add_argument('--gs', action='store_true', help='grid search SVM params')
 parser.add_argument('--show', action='store_true')
+parser.add_argument('--analyze', action='store_true')
 args = parser.parse_args()
 
 fixed_size = tuple((256, 256))
@@ -83,10 +85,6 @@ if args.local:
     orb_kmeans = load(os.path.join(save_folder, 'orb_kmeans.joblib'))
     color_kmeans = load(os.path.join(save_folder, 'color_kmeans.joblib'))
 
-# (train_data_global, test_data_global, train_labels_global, test_labels_global) = train_test_split(np.array(global_features),
-#                                                                                           np.array(global_labels),
-#                                                                                           test_size=0.2)
-
 train_data_global = global_features
 train_labels_global = global_labels
 
@@ -96,7 +94,7 @@ if args.retrain:
     elif args.knn:
         clf = KNeighborsClassifier()
     elif args.svm:
-        clf = SVC(gamma=0.01, C=4)
+        clf = SVC(gamma=0.01, C=4, probability=True)
     clf.fit(train_data_global, train_labels_global)
 else:
     if args.rf:
@@ -105,12 +103,6 @@ else:
         clf = load(os.path.join(save_folder, 'knn.joblib'))
     elif args.svm:
         clf = load(os.path.join(save_folder, 'svm.joblib'))
-
-# print("[STATUS] Fit KNN classifier to training data...")
-# print("[STATUS] Beginning test...")
-# print(test_data_global.shape)
-# score = clf.score(test_data_global, test_labels_global)
-# print("Score: {}".format(score))
 
 train_labels = os.listdir(train_path)
 out_root = args.output
@@ -133,6 +125,7 @@ if args.validate:
                 correct += 1
 
             if args.show:
+                print(clf.predict_proba(global_feature))
                 cv2.putText(image, prediction_label, (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,255), 3)
                 cv2.imshow('image', image)
                 if cv2.waitKey(0) & 0xFF == ord('q'):
@@ -141,7 +134,7 @@ if args.validate:
         print('Actual {}: {}/{} ({}%) labeled as {}'.format(d, correct, im_count, correct/im_count*100, d))
 elif args.sort:
     print('[STATUS] Beginning sort...')
-    test_images = glob.glob(os.path.join(test_path, '*.tif',))
+    test_images = glob.glob(os.path.join(test_path, '*.jpg',))
     for file in test_images:
         print('[STATUS] Processing file {}'.format(file))
         image = cv2.imread(file)
@@ -160,6 +153,14 @@ elif args.xv:
 elif args.gs and args.svm:
     grid = {'C':[4, 5]}
     grid_search_params(grid, svc=clf, data=global_features, target=global_labels)
+elif args.analyze:
+    labels = le.inverse_transform(global_labels)
+    reduced = TSNE(n_components=2, random_state=6).fit_transform(global_features)
+    for l in list(le.classes_):
+        print(l)
+        m_reduced = reduced[labels==l].T
+        plt.scatter(m_reduced[0], m_reduced[1])
+    plt.show()
 
 if args.retrain:    # save model
     print('[STATUS] Saving model...')
